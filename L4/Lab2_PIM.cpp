@@ -45,15 +45,24 @@ int main(int argc, char *argv[])
 	unsigned char *img3 = Tools::readImageGray8(imageFile3, w, h);
 	unsigned char *img4 = Tools::readImageGray8(imageFile4, w, h);
 
-	std::cout<<"[1]-filtru dim.mica [2]-filtru dim.mare\n";
+	std::cout<<"[1]-filtru dim.mica [2]-filtru dim.mare [3]-motion blur\n";
 	int option;
 	std::cin>>option;
-	option= (option==1 ?3:5);
+	int dim=3;
+	if(option == 2)
+	{
+		dim=5;
+	}
+	if(option == 3)
+	{
+		dim=9;
+	}
 
-	unsigned char *blur_convolutie = blur(img, w, h, option);
-	unsigned char *blur_convolutie2 = blur(img2, w, h, option);
-	unsigned char *blur_convolutie3 = blur(img3, w, h, option);
-	unsigned char *blur_convolutie4 = blur(img4, w, h, option);
+
+	unsigned char *blur_convolutie = blur(img, w, h, dim);
+	unsigned char *blur_convolutie2 = blur(img2, w, h, dim);
+	unsigned char *blur_convolutie3 = blur(img3, w, h, dim);
+	unsigned char *blur_convolutie4 = blur(img4, w, h, dim);
 
 	grid->addImage(blur_convolutie, w, h, 0, 1, "blur");
 	grid->addImage(blur_convolutie2, w, h, 1, 1, "blur");
