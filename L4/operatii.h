@@ -1,9 +1,9 @@
 #pragma once
 
-// filtru medie aritm
-static double filter_mean[][3] = {{1 / 9.0, 1 / 9.0, 1 / 9.0},
-								  {1 / 9.0, 1 / 9.0, 1 / 9.0},
-								  {1 / 9.0, 1 / 9.0, 1 / 9.0}};
+// // filtru medie aritm
+// static double filter_mean[][3] = {{1 / 9.0, 1 / 9.0, 1 / 9.0},
+// 								  {1 / 9.0, 1 / 9.0, 1 / 9.0},
+// 								  {1 / 9.0, 1 / 9.0, 1 / 9.0}};
 // filtru medie ponderata(Gauss)
 static double filter_gauss[][3] = {{1 / 16.0, 2 / 16.0, 1 / 16.0},
 								   {2 / 16.0, 4 / 16.0, 2 / 16.0},
