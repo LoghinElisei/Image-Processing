@@ -45,29 +45,61 @@ int main(int argc, char *argv[])
 	unsigned char *img3 = Tools::readImageGray8(imageFile3, w, h);
 	unsigned char *img4 = Tools::readImageGray8(imageFile4, w, h);
 
-	std::cout<<"[1]-filtru dim.mica [2]-filtru dim.mare [3]-motion blur\n";
+	std::cout << "\t[1]-filtru dim.mica [2]-filtru dim.mare\n";
+	std::cout << "\t[3]-motion blur [4]-mean_filter\n";
+	std::cout << "\t[5]-gaussian_filter\n";
 	int option;
-	std::cin>>option;
-	int dim=3;
-	if(option == 2)
+	std::cin >> option;
+	int dim = 3;
+
+	if (option == 2)
 	{
-		dim=5;
+		dim = 5;
 	}
-	if(option == 3)
+	if (option == 3)
 	{
-		dim=9;
+		dim = 9;
 	}
 
+	if (option < 4)
+	{
+		unsigned char *blur_convolutie = blur(img, w, h, dim);
+		unsigned char *blur_convolutie2 = blur(img2, w, h, dim);
+		unsigned char *blur_convolutie3 = blur(img3, w, h, dim);
+		unsigned char *blur_convolutie4 = blur(img4, w, h, dim);
 
-	unsigned char *blur_convolutie = blur(img, w, h, dim);
-	unsigned char *blur_convolutie2 = blur(img2, w, h, dim);
-	unsigned char *blur_convolutie3 = blur(img3, w, h, dim);
-	unsigned char *blur_convolutie4 = blur(img4, w, h, dim);
+		grid->addImage(blur_convolutie, w, h, 0, 1, "blur");
+		grid->addImage(blur_convolutie2, w, h, 1, 1, "blur");
+		grid->addImage(blur_convolutie3, w, h, 2, 1, "blur");
+		grid->addImage(blur_convolutie4, w, h, 3, 1, "blur");
+	}
+	else
+	{
+		if (option == 4)
+		{
+			unsigned char *mean_filter_image = mean_filter(img, w, h);
+			unsigned char *mean_filter_image2 = mean_filter(img2, w, h);
+			unsigned char *mean_filter_image3 = mean_filter(img3, w, h);
+			unsigned char *mean_filter_image4 = mean_filter(img4, w, h);
 
-	grid->addImage(blur_convolutie, w, h, 0, 1, "blur");
-	grid->addImage(blur_convolutie2, w, h, 1, 1, "blur");
-	grid->addImage(blur_convolutie3, w, h, 2, 1, "blur");
-	grid->addImage(blur_convolutie4, w, h, 3, 1, "blur");
+			grid->addImage(mean_filter_image, w, h, 0, 1, "blur");
+			grid->addImage(mean_filter_image2, w, h, 1, 1, "blur");
+			grid->addImage(mean_filter_image3, w, h, 2, 1, "blur");
+			grid->addImage(mean_filter_image4, w, h, 3, 1, "blur");
+		}
+		else if(option == 5)
+		{
+			unsigned char *gauss_filter_image = gauss_filter(img, w, h);
+			unsigned char *gauss_filter_image2 = gauss_filter(img2, w, h);
+			unsigned char *gauss_filter_image3 = gauss_filter(img3, w, h);
+			unsigned char *gauss_filter_image4 = gauss_filter(img4, w, h);
+
+			grid->addImage(gauss_filter_image, w, h, 0, 1, "blur");
+			grid->addImage(gauss_filter_image2, w, h, 1, 1, "blur");
+			grid->addImage(gauss_filter_image3, w, h, 2, 1, "blur");
+			grid->addImage(gauss_filter_image4, w, h, 3, 1, "blur");
+		}
+	}
 
 	grid->show();
 
