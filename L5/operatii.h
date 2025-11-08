@@ -139,3 +139,88 @@ unsigned char *huang_median(unsigned char *img, int m, int n, int Mmax, int Nmax
 	delete[] t;
 	return b;
 }
+
+static unsigned int Smin = 3;
+static unsigned int Smax = 7;
+
+unsigned char *adaptive_median(unsigned char *img, int w, int h)
+{
+
+	unsigned char *g = new unsigned char[w * h];
+	int offset;
+	int Zmin;
+	int Zmax;
+	int Zmed;
+	int A1, A2;
+	int B1,B2;
+	unsigned int dim = Smin;
+	int low_y;
+	int high_x;
+
+	unsigned int px;
+	for (int y = 0; y < h ; y++)
+		for (int x = 0; x < w ; x++)
+		{
+			
+			px = 0;
+			dim = Smin;
+			std::vector<int> neighbour_intensity;
+			neighbour_intensity.reserve(Smax*Smax);
+
+			while (true)
+			{
+				offset = dim / 2;	
+				neighbour_intensity.clear();
+
+				for (int i = -offset; i <= offset; i++)  // pentru a nu parcurge toata fereastra
+				{
+					for (int j = -offset; j <= offset; j++)
+					{
+						low_y = std::clamp(y+i,0,h-1);
+						high_x = std::clamp(x+j,0,w-1);
+						neighbour_intensity.push_back(img[low_y * w + high_x]);
+					}
+				}
+
+				std::sort(neighbour_intensity.begin(), neighbour_intensity.end());
+				Zmin = neighbour_intensity.front();
+				Zmax = neighbour_intensity.back();
+				Zmed = neighbour_intensity.at(neighbour_intensity.size() / 2);
+
+				A1 = Zmed - Zmin;
+				A2 = Zmed - Zmax;
+
+				if (A1 > 0 && A2 < 0) // lvl B
+				{
+					B1 = img[y*w+x] - Zmin;
+					B2 = img[y*w+x] - Zmax;
+					if(B1 > 0 && B2<0)
+					{
+						px = img[y*w+x];
+
+					}
+					else
+					{
+						px = Zmed;
+					}
+					break;
+				}
+				else // lvl A
+				{
+					dim += 2; //impar
+					if(dim > Smax)
+					{
+						
+						px = Zmed;
+						break;
+					}
+				}
+
+			}
+			g[y * w + x] = px;
+		}
+
+	std::cout << "!!! Image processed sucessfully" << std::endl;
+
+	return g;
+}

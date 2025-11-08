@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 	unsigned char *img3 = Tools::readImageGray8(imageFile3, w, h);
 	unsigned char *img4 = Tools::readImageGray8(imageFile4, w, h);
 
-	std::cout << "\t[1]-median filter [2]huang_median\n";
+	std::cout << "\t[1]-median filter [2]huang_median [3]-adaptive median\n";
 
 	int option;
 	std::cin >> option;
@@ -58,7 +58,12 @@ int main(int argc, char *argv[])
 	unsigned char *huang_median_img2;
 	unsigned char *huang_median_img3;
 	unsigned char *huang_median_img4;
-	
+
+	unsigned char *adaptive_median_img;
+	unsigned char *adaptive_median_img2;
+	unsigned char *adaptive_median_img3;
+	unsigned char *adaptive_median_img4;
+
 	if (option == 1)
 	{
 		median_filter_img = median_filter(img, w, h, dim);
@@ -79,12 +84,12 @@ int main(int argc, char *argv[])
 		delete[] median_filter_img3;
 		delete[] median_filter_img4;
 	}
-	else if(option == 2)
+	else if (option == 2)
 	{
-		huang_median_img = huang_median(img, 7, 7, w,h);
-		huang_median_img2 = huang_median(img2, 7, 7, w,h);
-		huang_median_img3 = huang_median(img3, 7, 7, w,h);
-		huang_median_img4 = huang_median(img4,7, 7, w,h);
+		huang_median_img = huang_median(img, 7, 7, w, h);
+		huang_median_img2 = huang_median(img2, 7, 7, w, h);
+		huang_median_img3 = huang_median(img3, 7, 7, w, h);
+		huang_median_img4 = huang_median(img4, 7, 7, w, h);
 
 		grid->addImage(huang_median_img, w, h, 0, 1, "huang");
 		grid->addImage(huang_median_img2, w, h, 1, 1, "huang");
@@ -98,7 +103,25 @@ int main(int argc, char *argv[])
 		delete[] huang_median_img3;
 		delete[] huang_median_img4;
 	}
-	
+	else if (option == 3)
+	{
+		adaptive_median_img = adaptive_median(img, w, h);
+		adaptive_median_img2 = adaptive_median(img2, w, h);
+		adaptive_median_img3 = adaptive_median(img3, w, h);
+		adaptive_median_img4 = adaptive_median(img4, w, h);
+
+		grid->addImage(adaptive_median_img, w, h, 0, 1, "adaptive");
+		grid->addImage(adaptive_median_img2, w, h, 1, 1, "adaptive");
+		grid->addImage(adaptive_median_img3, w, h, 2, 1, "adaptive");
+		grid->addImage(adaptive_median_img4, w, h, 3, 1, "adaptive");
+
+		grid->show();
+		status = a.exec();
+		delete[] adaptive_median_img;
+		delete[] adaptive_median_img2;
+		delete[] adaptive_median_img3;
+		delete[] adaptive_median_img4;
+	}
 
 	return status;
 }
