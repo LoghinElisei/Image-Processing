@@ -84,7 +84,6 @@ unsigned char *blur(unsigned char *img, int w, int h, int dim)
 	// 	g[(h - 1) * w + x] = img[(h - 1) * w + x];
 	// }
 
-	// old data to black
 
 	for (int y = 0; y < h; y++)
 	{
