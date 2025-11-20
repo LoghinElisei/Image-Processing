@@ -86,12 +86,20 @@ cv::Mat drawHistogram(const cv::Mat gray)
 }
 
 
-unsigned char* sobelImage(unsigned char* img, int w, int h)
+unsigned char* sobelImage(unsigned char* img, int w, int h,int direction)
 {
 	unsigned char* result = new unsigned char[w * h];
 	cv::Mat inMat(h, w, CV_8UC1, img);
 	cv::Mat outMat;
-	cv::Mat kern = (cv::Mat_<char>(3, 3) << -1, -2, -1, 0, 0, 0, 1, 2, 1);
+	cv::Mat kern;
+	if (direction == 1)
+	{
+		kern = (cv::Mat_<char>(3, 3) << -1, 0, 1, -2, 0, 2, -1, 0, 1);
+	}
+	else 
+	{
+		kern = (cv::Mat_<char>(3, 3) << -1, -2, -1, 0, 0, 0, 1, 2, 1);
+	}
 	cv::filter2D(inMat, outMat, inMat.depth(), kern);
 	cv::Mat absMat(h, w, CV_8UC1, result);
 	cv::convertScaleAbs(outMat, absMat);

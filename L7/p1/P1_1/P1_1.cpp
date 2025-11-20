@@ -36,10 +36,10 @@ int main()
     int h = img.rows;
     ImageGrid  grid;
     
-    std::cout << "\tChoose [1]-negative/binary/histogram...  [2]-blur/gaussian/laplacian/sobel...\n>> ";
+    std::cout << "\tChoose [1]-negative/binary/histogram...  [2]-blur/gaussian/laplacian/sobel... [3]-edges highlight\n >> ";
     std::cin >> option;
     grid.add("Original grayscale", img);
-
+ 
     if (option == 1)
     {
         unsigned char* negated_image = negateImage(img.data, w, h);
@@ -71,10 +71,12 @@ int main()
         grid.add("Hist Equalized", histEq);
 
     }
-    else
+    else if(option == 2)
     {
-        unsigned char * sobel_image = sobelImage(img.data, w, h);
-        cv::Mat sobelMat(h, w, CV_8UC1, sobel_image);
+        cv::Mat sobel;
+        cv::Sobel(img, sobel, CV_16S, 1, 0, 3, 1, 0, cv::BORDER_DEFAULT);
+        cv::Mat absSobel;
+        cv::convertScaleAbs(sobel, absSobel);
 
         unsigned char* motion_image = motionBlur(img.data, w, h);
         cv::Mat motionMat(h, w, CV_8UC1, motion_image);
@@ -90,13 +92,36 @@ int main()
         cv::Mat blur;
         cv::blur(img, blur, cv::Size(5, 3), cv::Point(-1, -1), cv::BORDER_DEFAULT);
 
-        grid.add("Sobel filter", sobelMat);
+       
         grid.add("Motion Blur", motionMat);
         grid.add("Gaussian Blur", gaussianBlur);
         grid.add("Laplacian", absLaplacian);
+        grid.add("Sobel filter", absSobel);
         grid.add("Blur mean", blur);
     }
-   
+    else if (option == 3)
+    {
+       
+        unsigned char * sobel_onX = sobelImage(img.data, w, h,1);
+        cv::Mat sobelXMat(h, w, CV_8UC1, sobel_onX);
+
+        unsigned char* sobel_onY = sobelImage(img.data, w, h, 2);
+        cv::Mat sobelYMat(h, w, CV_8UC1, sobel_onY);
+
+        cv::Mat sobelCombined;
+        cv::multiply(sobelXMat, sobelYMat, sobelCombined, 1.0 / 255.0);
+
+        cv::Mat sobelCombinedSum;
+        cv::add(sobelXMat, sobelYMat, sobelCombinedSum);
+        cv::Mat absSobelCombinedSum;
+        cv::convertScaleAbs(sobelCombinedSum, absSobelCombinedSum);
+
+        grid.add("Sobel on X", sobelXMat);
+        grid.add("Sobel on Y", sobelYMat);
+        grid.add("Sobel combined", sobelCombined);
+        grid.add("Sobel combined using sum", absSobelCombinedSum);
+
+    }
     grid.show("ALL PHOTOS");
     cv::waitKey(0);
     
