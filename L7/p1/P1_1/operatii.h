@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
@@ -24,7 +24,7 @@ public:
         int rows = std::ceil(std::sqrt(count));
         int cols = rows;
 
-        int img_h = 250; // dimensiunea fiec?rei imagini �n grid
+        int img_h = 250; // dimensiunea fiecărei imagini în grid
         int img_w = 250;
        
 
@@ -58,3 +58,7 @@ public:
         cv::imshow(windowName, grid);
     }
 };
+
+
+unsigned char* sobelImage(unsigned char* img, int w, int h);
+
