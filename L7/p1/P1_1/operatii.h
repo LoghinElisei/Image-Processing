@@ -61,4 +61,4 @@ public:
 
 unsigned char* sobelImage(unsigned char* img, int w, int h, int direction);
 unsigned char* motionBlur(unsigned char* img, int w, int h);
-
+unsigned char* median_filter(unsigned char* img, int w, int h, int filter_dim);

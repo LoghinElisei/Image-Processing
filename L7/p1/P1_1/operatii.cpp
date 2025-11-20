@@ -127,3 +127,54 @@ unsigned char* motionBlur(unsigned char* img, int w, int h)
 
 	return result;
 }
+
+
+unsigned char* median_filter(unsigned char* img, int w, int h, int filter_dim)
+{
+
+	if (filter_dim % 2 == 0)
+	{
+		fprintf(stderr, "The size of filter must be odd\n");
+		exit(EXIT_FAILURE);
+	}
+	int dim = filter_dim * filter_dim;
+	unsigned char* g = new unsigned char[w * h];
+
+	int k;
+	int center = dim / 2;
+	int offset = filter_dim / 2;
+	std::vector<int> neighbour_intensity(dim);
+
+	for (int y = 1; y < (h - offset); y++)
+		for (int x = 1; x < (w - offset); x++)
+		{
+			k = 0;
+			for (int i = 0; i < filter_dim; i++)
+			{
+				for (int j = 0; j < filter_dim; j++)
+				{
+
+					neighbour_intensity[k++] = img[(y + i - offset) * w + (x + j - offset)];
+				}
+			}
+
+			std::sort(neighbour_intensity.begin(), neighbour_intensity.end());
+
+			g[y * w + x] = static_cast<unsigned char>(neighbour_intensity[center]);
+		}
+
+	for (int y = 0; y < h; y++)
+	{
+		g[y * w] = 0;
+		g[y * w + (w - 1)] = 0;
+	}
+	for (int x = 0; x < w; x++)
+	{
+		g[0 * w + x] = 0;
+		g[(h - 1) * w + x] = 0;
+	}
+
+	
+
+	return g;
+}

@@ -36,14 +36,23 @@ int main()
     int h = img.rows;
     ImageGrid  grid;
     
-    std::cout << "\tChoose [1]-negative/binary/histogram...  [2]-blur/gaussian/laplacian/sobel... [3]-edges highlight\n >> ";
+    std::cout << "\t[1]-negative/binary/histogram...  [2]-blur/gaussian/laplacian/sobel...\n\t [3]-edges highlight [4]-median filter\n >> ";
     std::cin >> option;
     grid.add("Original grayscale", img);
  
+    unsigned char* negated_image = nullptr;
+    unsigned char* binary_image = nullptr;
+    unsigned char* motion_image = nullptr;
+    unsigned char* sobel_onX = nullptr;
+    unsigned char* sobel_onY = nullptr;
+    unsigned char* median_3 = nullptr;
+    unsigned char* median_5 = nullptr;
+    unsigned char* median_7 = nullptr;
+
     if (option == 1)
     {
-        unsigned char* negated_image = negateImage(img.data, w, h);
-        unsigned char* binary_image = binaryImage(img.data, w, h);
+        negated_image = negateImage(img.data, w, h);
+        binary_image = binaryImage(img.data, w, h);
 
         cv::Mat negMat(h, w, CV_8UC1, negated_image);
         cv::Mat binMat(h, w, CV_8UC1, binary_image);
@@ -78,7 +87,7 @@ int main()
         cv::Mat absSobel;
         cv::convertScaleAbs(sobel, absSobel);
 
-        unsigned char* motion_image = motionBlur(img.data, w, h);
+        motion_image = motionBlur(img.data, w, h);
         cv::Mat motionMat(h, w, CV_8UC1, motion_image);
 
         cv::Mat gaussianBlur;
@@ -102,10 +111,10 @@ int main()
     else if (option == 3)
     {
        
-        unsigned char * sobel_onX = sobelImage(img.data, w, h,1);
+        sobel_onX = sobelImage(img.data, w, h,1);
         cv::Mat sobelXMat(h, w, CV_8UC1, sobel_onX);
 
-        unsigned char* sobel_onY = sobelImage(img.data, w, h, 2);
+        sobel_onY = sobelImage(img.data, w, h, 2);
         cv::Mat sobelYMat(h, w, CV_8UC1, sobel_onY);
 
         cv::Mat sobelCombined;
@@ -122,12 +131,69 @@ int main()
         grid.add("Sobel combined using sum", absSobelCombinedSum);
 
     }
-    grid.show("ALL PHOTOS");
+    else
+    {
+        median_3 = median_filter(img.data, w, h, 3);
+        cv::Mat median_3_Mat(h, w, CV_8UC1, median_3);
+
+        median_5 = median_filter(img.data, w, h, 5);
+        cv::Mat median_5_Mat(h, w, CV_8UC1, median_5);
+
+        median_7 = median_filter(img.data, w, h, 7);
+        cv::Mat median_7_Mat(h, w, CV_8UC1, median_7);
+
+
+        grid.add("Median filter_dim = 3", median_3_Mat);
+        grid.add("Median filter_dim = 5", median_5_Mat);
+        grid.add("Median filter_dim = 7", median_7_Mat);
+    }
+    grid.show("IMAGE PROCESSING");
     cv::waitKey(0);
+
     
+    unsigned char* negated_image = nullptr;
+    unsigned char* binary_image = nullptr;
+    unsigned char* motion_image = nullptr;
+    unsigned char* sobel_onX = nullptr;
+    unsigned char* sobel_onY = nullptr;
+    unsigned char* median_3 = nullptr;
+    unsigned char* median_5 = nullptr;
+    unsigned char* median_7 = nullptr;
 
+    //free memory
 
-
+    if (nullptr != negated_image) {
+        delete[] negated_image;
+        negated_image = nullptr;
+    }
+    if (nullptr != binary_image) {
+        delete[] binary_image;
+        binary_image = nullptr;
+    }
+    if (nullptr != motion_image) {
+        delete[] motion_image;
+        motion_image = nullptr;
+    }
+    if (nullptr != sobel_onX) {
+        delete[] sobel_onX;
+        sobel_onX = nullptr;
+    }
+    if (nullptr != sobel_onY) {
+        delete[] sobel_onY;
+        sobel_onY = nullptr;
+    }
+    if (nullptr != median_3) {
+        delete[] median_3;
+        median_3 = nullptr;
+    }
+    if (nullptr != median_5) {
+        delete[] median_5;
+        median_5 = nullptr;
+    }
+    if (nullptr != median_7) {
+        delete[] median_7;
+        median_7 = nullptr;
+    }
 
     return 0;
 }

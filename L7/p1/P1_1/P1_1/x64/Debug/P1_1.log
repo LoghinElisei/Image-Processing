@@ -5,4 +5,35 @@ C:\Users\loghi\Desktop\GIT PROJECT\Image-Processing\L7\p1\P1_1\operatii.h(23,19)
 C:\Users\loghi\Desktop\GIT PROJECT\Image-Processing\L7\p1\P1_1\operatii.h(24,18): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
   (compiling source file 'P1_1.cpp')
   
-  P1_1.vcxproj -> C:\Users\loghi\Desktop\GIT PROJECT\Image-Processing\L7\p1\P1_1\x64\Debug\P1_1.exe
+C:\Users\loghi\Desktop\GIT PROJECT\Image-Processing\L7\p1\P1_1\P1_1.cpp(154,20): error C2374: 'negated_image': redefinition; multiple initialization
+      C:\Users\loghi\Desktop\GIT PROJECT\Image-Processing\L7\p1\P1_1\P1_1.cpp(43,20):
+      see declaration of 'negated_image'
+  
+C:\Users\loghi\Desktop\GIT PROJECT\Image-Processing\L7\p1\P1_1\P1_1.cpp(155,20): error C2374: 'binary_image': redefinition; multiple initialization
+      C:\Users\loghi\Desktop\GIT PROJECT\Image-Processing\L7\p1\P1_1\P1_1.cpp(44,20):
+      see declaration of 'binary_image'
+  
+C:\Users\loghi\Desktop\GIT PROJECT\Image-Processing\L7\p1\P1_1\P1_1.cpp(156,20): error C2374: 'motion_image': redefinition; multiple initialization
+      C:\Users\loghi\Desktop\GIT PROJECT\Image-Processing\L7\p1\P1_1\P1_1.cpp(45,20):
+      see declaration of 'motion_image'
+  
+C:\Users\loghi\Desktop\GIT PROJECT\Image-Processing\L7\p1\P1_1\P1_1.cpp(157,20): error C2374: 'sobel_onX': redefinition; multiple initialization
+      C:\Users\loghi\Desktop\GIT PROJECT\Image-Processing\L7\p1\P1_1\P1_1.cpp(46,20):
+      see declaration of 'sobel_onX'
+  
+C:\Users\loghi\Desktop\GIT PROJECT\Image-Processing\L7\p1\P1_1\P1_1.cpp(158,20): error C2374: 'sobel_onY': redefinition; multiple initialization
+      C:\Users\loghi\Desktop\GIT PROJECT\Image-Processing\L7\p1\P1_1\P1_1.cpp(47,20):
+      see declaration of 'sobel_onY'
+  
+C:\Users\loghi\Desktop\GIT PROJECT\Image-Processing\L7\p1\P1_1\P1_1.cpp(159,20): error C2374: 'median_3': redefinition; multiple initialization
+      C:\Users\loghi\Desktop\GIT PROJECT\Image-Processing\L7\p1\P1_1\P1_1.cpp(48,20):
+      see declaration of 'median_3'
+  
+C:\Users\loghi\Desktop\GIT PROJECT\Image-Processing\L7\p1\P1_1\P1_1.cpp(160,20): error C2374: 'median_5': redefinition; multiple initialization
+      C:\Users\loghi\Desktop\GIT PROJECT\Image-Processing\L7\p1\P1_1\P1_1.cpp(49,20):
+      see declaration of 'median_5'
+  
+C:\Users\loghi\Desktop\GIT PROJECT\Image-Processing\L7\p1\P1_1\P1_1.cpp(161,20): error C2374: 'median_7': redefinition; multiple initialization
+      C:\Users\loghi\Desktop\GIT PROJECT\Image-Processing\L7\p1\P1_1\P1_1.cpp(50,20):
+      see declaration of 'median_7'
+  
