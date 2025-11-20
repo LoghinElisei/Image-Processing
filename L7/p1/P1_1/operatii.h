@@ -50,7 +50,6 @@ public:
                 cv::putText(grid, images[idx].first,
                     cv::Point(c * img_w + 10, r * img_h + 20),
                     cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 0), 1);
-
                 idx++;
             }
         }
@@ -61,4 +60,5 @@ public:
 
 
 unsigned char* sobelImage(unsigned char* img, int w, int h);
+unsigned char* motionBlur(unsigned char* img, int w, int h);
 

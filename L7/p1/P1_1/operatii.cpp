@@ -97,3 +97,25 @@ unsigned char* sobelImage(unsigned char* img, int w, int h)
 	cv::convertScaleAbs(outMat, absMat);
 	return result;
 }
+
+
+unsigned char* motionBlur(unsigned char* img, int w, int h)
+{
+	unsigned char* result = new unsigned char[w * h];
+	cv::Mat inMat(h, w, CV_8UC1, img);
+	cv::Mat outMat;
+	cv::Mat kern = cv::Mat::zeros(5, 5, CV_32F);
+	kern.row(2) = cv::Mat::ones(1, 5, CV_32F) / 5.0;
+
+	/*0,0,1/13.0,0,
+	0,1/13.0,1/13.0,1/13.0,0,
+	1/13.0,1/13.0,1/13.0,1/13.0,1/13.0,
+	0,1/13.0,1/13.0,1/13.0,0,
+	0,0,1/13.0,0,0);*/
+
+	cv::filter2D(inMat, outMat, inMat.depth(), kern);
+	cv::Mat absMat(h, w, CV_8UC1, result);
+	cv::convertScaleAbs(outMat, absMat);
+
+	return result;
+}
