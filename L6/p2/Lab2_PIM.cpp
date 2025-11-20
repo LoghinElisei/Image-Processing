@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 	std::cout << "[3]-Nearest neighbor [4]-Interpolare liniara cu x zoom\n";
 	std::cin >> option;
 
-	unsigned char *zoomed_image;
+	unsigned char *zoomed_image = nullptr;
 
 	switch (option)
 	{
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 		zoomed_image = nearestNeighborZoomImage(img, w, h,zoomX,zoomY);
 		grid->addImage(zoomed_image, w * zoomX, h * zoomY, 0, 2, "zoomed image");
 		break;
-	case 4:
+	default:
 		std::cout << "zoomX = ";
 		std::cin >> zoomX;
 		std::cout << "zoomY = ";
@@ -95,7 +95,11 @@ int main(int argc, char *argv[])
 	grid->show();
 	status = a.exec();
 
-	delete[] zoomed_image;
+	if(zoomed_image != nullptr)
+	{
+		delete[] zoomed_image;
+	}
+	
 
 	return status;
 }

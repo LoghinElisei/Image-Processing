@@ -72,9 +72,7 @@ unsigned char *liniarInterpolationZoomImage(unsigned char *img, int w, int h, in
 			for(int k =1; k<scaleX;k++)
 			{
 				g[y * new_w + (x + k)] = (left+right) / 2;
-			}
-
-			
+			}	
 		}
 		// g[y * new_w + (w-1)]  = g[y*new_w + (w-2)]; // copy the penultimate column to last column
 	}
