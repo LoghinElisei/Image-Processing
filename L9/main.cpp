@@ -2,7 +2,7 @@
 #include "opencv2/imgproc.hpp"
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui.hpp"
-
+#include "operatii.h"
 #include <iostream>
 
 using namespace cv;
@@ -20,7 +20,7 @@ static void help(char ** argv)
 int main(int argc, char ** argv)
 {
     help(argv);
-
+    ImageGrid grid;
     const char* filename = argc >=2 ? argv[1] : "../../images/lena512.bmp";
 
     Mat I = imread( samples::findFile( filename ), IMREAD_GRAYSCALE);
@@ -30,6 +30,11 @@ int main(int argc, char ** argv)
     }
     
 
+
+    /****************************************************************************** */
+    /************************ DIRECT FOURIER ****************************************/
+    
+    
     Mat padded;                            //expand input image to optimal size
     int m = getOptimalDFTSize( I.rows );
     int n = getOptimalDFTSize( I.cols ); // on the border add zero values
@@ -74,8 +79,64 @@ int main(int argc, char ** argv)
     normalize(magI, magI, 0, 1, NORM_MINMAX); // Transform the matrix with float values into a
                                             // viewable image form (float between values 0 and 1).
 
-    imshow("Input Image"       , I   );    // Show the result
-    imshow("spectrum magnitude", magI);
+    
+    magI.convertTo(magI, CV_8U,255);
+    // imshow("Input Image"       , I   );    // Show the result
+    // imshow("spectrum magnitude", magI);
+    grid.add("Original",I);
+    grid.add("DFT",magI);
+
+    
+    /****************************************************************************** */
+    /************************ INVERSE FOURIER ****************************************/
+  
+    Mat planes2[] = {Mat_<float>(padded), Mat::zeros(padded.size(), CV_32F)};
+    // Mat complexI;
+    merge(planes2, 2, complexI);         // Add to the expanded another plane with zeros
+
+    idft(complexI, complexI);            // this way the result may fit in the source matrix
+
+    // compute the magnitude and switch to logarithmic scale
+    // => log(1 + sqrt(Re(DFT(I))^2 + Im(DFT(I))^2))
+    split(complexI, planes2);                   // planes2[0] = Re(DFT(I), planes2[1] = Im(DFT(I))
+    magnitude(planes2[0], planes2[1], planes2[0]);// planes2[0] = magnitude
+    magI = planes2[0];
+
+    magI += Scalar::all(1);                    // switch to logarithmic scale
+    log(magI, magI);
+
+    // crop the spectrum, if it has an odd number of rows or columns
+    magI = magI(Rect(0, 0, magI.cols & -2, magI.rows & -2));
+
+    // rearrange the quadrants of Fourier image  so that the origin is at the image center
+    cx = magI.cols/2;
+    cy = magI.rows/2;
+
+    Mat q00(magI, Rect(0, 0, cx, cy));   // Top-Left - Create a ROI per quadrant
+    Mat q10(magI, Rect(cx, 0, cx, cy));  // Top-Right
+    Mat q20(magI, Rect(0, cy, cx, cy));  // Bottom-Left
+    Mat q30(magI, Rect(cx, cy, cx, cy)); // Bottom-Right
+
+    Mat tmp2;                           // swap quadrants (Top-Left with Bottom-Right)
+    q00.copyTo(tmp2);
+    q30.copyTo(q00);
+    tmp2.copyTo(q30);
+
+    q10.copyTo(tmp2);                    // swap quadrant (Top-Right with Bottom-Left)
+    q20.copyTo(q10);
+    tmp.copyTo(q20);
+
+    normalize(magI, magI, 0, 1, NORM_MINMAX); // Transform the matrix with float values into a
+                                            // viewable image form (float between values 0 and 1).
+
+    
+    magI.convertTo(magI, CV_8U,255);
+    // imshow("Input Image"       , I   );    // Show the result
+    // imshow("spectrum magnitude", magI);
+    grid.add("IDFT",magI);
+
+
+    grid.show("Lab9");
     waitKey();
 
     return EXIT_SUCCESS;

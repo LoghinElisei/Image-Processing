@@ -22,7 +22,7 @@ public:
         int rows = (int)std::ceil(std::sqrt(count));
         int cols = rows;
 
-        int img_h = 300; // dimensiunea fiecărei imagini în grid
+        int img_h = 330; // dimensiunea fiecărei imagini în grid
         int img_w = 450;
        
 
