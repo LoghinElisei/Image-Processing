@@ -1,0 +1,9 @@
+{
+    "cmake.configureSettings": {
+        "OpenCV_DIR": "C:/opencv/build"
+    },
+    "files.associations": {
+        "xstring": "cpp",
+        "cmath": "cpp"
+    }
+}
