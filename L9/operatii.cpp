@@ -1,8 +1,5 @@
 #include "operatii.h"
 
-
-
-
 cv::Mat drawHistogram(const cv::Mat gray)
 {
 	int channels[] = { 0 };

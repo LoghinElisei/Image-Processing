@@ -8,6 +8,31 @@
 using namespace cv;
 using namespace std;
 
+
+int gaussFilter[][5]={
+	{1,4,6,4,1},
+	{4,16,24,16,4},
+	{6,24,36,24,6},
+    {4,16,24,16,4},
+	{1,4,6,4,1}
+};
+
+
+
+float calcSum(Mat &mat,int size)
+{
+    float sum=0;
+    for(int i=0;i<size;i++)
+    {
+        for(int j=0;j<size;j++)
+        {
+            mat.at<float>(i,j)=gaussFilter[i][j];
+            sum+=gaussFilter[i][j];
+        }
+    }
+    return sum;
+}
+
 static void help(char ** argv)
 {
     cout << endl
@@ -21,7 +46,7 @@ int main(int argc, char ** argv)
 {
     help(argv);
     ImageGrid grid;
-    const char* filename = argc >=2 ? argv[1] : "../../images/lena512.bmp";
+    const char* filename = argc >=2 ? argv[1] : "../../images/ball.jpg";
 
     Mat I = imread( samples::findFile( filename ), IMREAD_GRAYSCALE);
     if( I.empty()){
@@ -29,8 +54,7 @@ int main(int argc, char ** argv)
         return EXIT_FAILURE;
     }
     
-
-
+    
     /****************************************************************************** */
     /************************ DIRECT FOURIER ****************************************/
     
@@ -86,14 +110,121 @@ int main(int argc, char ** argv)
     grid.add("Original",I);
     grid.add("DFT",magI);
 
+
+
+
+
+
+
+
     
     /****************************************************************************** */
     /************************ INVERSE FOURIER ****************************************/
     Mat invDFT;
+    //using complex specter obtained from DFT
     dft(complexI,invDFT,DFT_INVERSE | DFT_REAL_OUTPUT | DFT_SCALE);   // REAL_OUTPUT -> real part(grayscale) , SCALE-> div (N*M)
     normalize(invDFT,invDFT,0,1,NORM_MINMAX);
     invDFT.convertTo(invDFT,CV_8U,255);
     grid.add("IDFT",invDFT);
+
+
+
+
+
+
+
+    /****************************************************************************** */
+    /************************ GAUSS FILTER ****************************************/
+    Mat gaussFilter(5,5,CV_32F);
+    float sum=0;
+    sum= calcSum(gaussFilter,5);
+    gaussFilter /= sum;
+
+    //extend dimension
+    Mat gaussFilterPadded;
+    copyMakeBorder(gaussFilter,gaussFilterPadded,0,I.rows-5,0,I.cols-5,BORDER_CONSTANT,Scalar::all(0));
+
+    //DFT la filtru
+    Mat planesGauss[] = {Mat_<float>( gaussFilterPadded), Mat::zeros( gaussFilterPadded.size(), CV_32F)};
+    Mat complexGauss;
+    merge(planesGauss, 2, complexGauss);         // Add to the expanded another plane with zeros
+    dft(complexGauss, complexGauss,DFT_COMPLEX_OUTPUT);            // this way the result may fit in the source matrix
+
+    //DFT la imagine
+    Mat complexIm = complexI.clone();
+
+    // TFim * Tf_filtru
+    Mat complexFilter;
+    mulSpectrums(complexIm,complexGauss,complexFilter,0);
+
+    //IDFT
+    Mat invDFTfilter;
+    dft(complexFilter,invDFTfilter,DFT_INVERSE | DFT_REAL_OUTPUT | DFT_SCALE);
+
+
+
+    //normalize
+    normalize(invDFTfilter,invDFTfilter,0,1,NORM_MINMAX);
+    invDFTfilter.convertTo(invDFTfilter,CV_8U,255);
+    grid.add("Fourier - Gaussian Filter",invDFTfilter);
+
+
+    //spatial filter
+    Mat spatialGaussFilter;
+    filter2D(I,spatialGaussFilter,-1,gaussFilter);
+    grid.add("Spatial - Gaussian Filter",spatialGaussFilter);
+
+
+
+    
+
+
+
+
+
+
+/****************************************************************************** */
+    /************************ GAUSS SPECTRUM ****************************************/
+
+
+
+
+    Mat planesG[2];
+    split(complexGauss, planesG);     // planesG[0] = Re, planesG[1] = Im
+
+    Mat magG;
+    magnitude(planesG[0], planesG[1], magG);
+
+    // log(1 + magnitude)
+    magG += Scalar::all(1);
+    log(magG, magG);
+
+    magG = magG(Rect(0, 0, magG.cols & -2, magG.rows & -2));
+
+    int cxG = magG.cols/2;
+    int cyG = magG.rows/2;
+
+    Mat q0g(magG, Rect(0, 0, cxG, cyG));
+    Mat q1g(magG, Rect(cxG, 0, cxG, cyG));
+    Mat q2g(magG, Rect(0, cyG, cxG, cyG));
+    Mat q3g(magG, Rect(cxG, cyG, cxG, cyG));
+
+    Mat tmpG;
+    q0g.copyTo(tmpG);
+    q3g.copyTo(q0g);
+    tmpG.copyTo(q3g);
+
+    q1g.copyTo(tmpG);
+    q2g.copyTo(q1g);
+    tmpG.copyTo(q2g);
+
+    normalize(magG, magG, 0, 1, NORM_MINMAX);
+    magG.convertTo(magG, CV_8U, 255);
+    grid.add("Gaussian Spectrum", magG);
+
+
+
+
 
     grid.show("Lab9");
     waitKey();
