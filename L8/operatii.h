@@ -117,7 +117,6 @@ unsigned char *IDTF(const Complex *c,int w,int h)
 	int N = w*h;
 	unsigned char *out = new unsigned char[N];
 
-	double px;
 	double angle;
 
 	Complex sum(0,0);
@@ -161,3 +160,81 @@ unsigned char *IDTF(const Complex *c,int w,int h)
 }
 
 
+double *gaussianFilter(int w, int h,double D)   //D-sigma 
+{
+
+	double *H = new double[w*h];
+
+	int cx = w/2;
+	int cy = h/2;
+	double du,dv,d;
+
+	for(int u=0;u<h;u++)
+	{
+		for(int v=0;v<w;v++)
+		{
+			du = u-cy;
+			dv = v-cx;
+			d = du*du + dv*dv;
+
+			H[u*w+v] = exp(-(d) / (2*D*D));
+		}
+	}
+
+	return H;
+}
+
+void applyGaussianFilter(Complex *C, double *H,int w,int h)
+{
+	int N = w*h;
+	for(int i=0;i<N;i++)
+	{
+		C[i].re *= H[i];
+		C[i].im *= H[i];
+	}
+}
+
+unsigned char *gaussianFilterOnFreqDom(unsigned char *img,int w, int h)
+{
+
+	//DFT
+	Complex *C = new Complex[w*h];
+	DFT(img,C,w,h);
+
+	//shift
+	// DFT_Shift((unsigned char*)C,w,h);
+
+	//filter gaussian
+	double sigma = 50.0;
+	double *H = gaussianFilter(w,h,sigma);
+
+	//apply filter
+	applyGaussianFilter(C,H,w,h);
+
+	delete []H;
+
+	// DFT_Shift((unsigned char *)C,w,h);
+
+	//inverse DFT
+	unsigned char *out = IDTF(C,w,h);
+
+	//normalize
+	double max = out[0];
+	double min = out[0]; 
+
+	for(int i=0;i<w*h;i++)
+	{
+		if(out[i] <min) min = out[i];
+		if(out[i] > max) max = out[i];
+	}
+
+	for(int i=0;i<w*h;i++)
+	{
+		out[i] = (unsigned char )(255 * (out[i]-min)/(max-min));
+	}
+
+	delete []C;
+
+	return out;
+
+}

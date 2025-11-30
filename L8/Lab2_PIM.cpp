@@ -58,17 +58,21 @@ int main(int argc, char *argv[])
 	Complex complex;
 	Complex *c = new Complex[w*h]();
 
+	unsigned char *imgCopy = new unsigned char [w*h];
+	std::copy(img,img + w*h,imgCopy);
 
-	DFT(img,c,w,h);
+
+	DFT(imgCopy,c,w,h);
 	unsigned char *fourierSpectrum = genSpectrum(c,w,h);
 	DFT_Shift(fourierSpectrum,w,h);
 	
 	unsigned char *idtf = IDTF(c,w,h);
 
+	unsigned char *gaussian = gaussianFilterOnFreqDom(img,w,h);
 
 	grid->addImage(fourierSpectrum,w,h,0,1,"Fourier Spectrum");
-	grid->addImage(idtf,w,h,0,2,"IDTF");
-
+	grid->addImage(idtf,w,h,1,0,"IDTF");
+	grid->addImage(gaussian,w,h,1,1,"Gaussian filter on Freq domain");
 	grid->show();
 	status = a.exec();
 
