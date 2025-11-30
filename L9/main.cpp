@@ -284,6 +284,35 @@ int main(int argc, char ** argv)
 
     /****************************************************************************** */
     /************************ GAUSS FILTER IN FREQUENCY [SPECTRUM]****************************************/
+    Mat planes3[2];
+    split(complexGaussinFreq, planes3);
+
+    Mat magG3;
+    magnitude(planes3[0], planes3[1], magG3);
+    magG3 += Scalar::all(1);
+    log(magG3, magG3);
+
+    // crop to even size
+    magG3 = magG3(Rect(0,0,magG3.cols & -2, magG3.rows & -2));
+
+    // swap quadrants
+    int cxg = magG3.cols/2;
+    int cyg = magG3.rows/2;
+
+    Mat q03(magG3, Rect(0,0,cxg,cyg));
+    Mat q13(magG3, Rect(cxg,0,cxg,cyg));
+    Mat q23(magG3, Rect(0,cyg,cxg,cyg));
+    Mat q33(magG3, Rect(cxg,cyg,cxg,cyg));
+
+    Mat tmp3;
+    q03.copyTo(tmp3); q33.copyTo(q03); tmp3.copyTo(q33);
+    q13.copyTo(tmp3); q23.copyTo(q13); tmp3.copyTo(q23);
+
+    normalize(magG3, magG3, 0, 1, NORM_MINMAX);
+    magG3.convertTo(magG3, CV_8U, 255);
+
+    grid.add("Gaussian Filter in Freq domain [Spectrum]", magG3);
+
 
     grid.show("Lab9");
     waitKey();
