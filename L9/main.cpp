@@ -33,6 +33,8 @@ float calcSum(Mat &mat,int size)
     return sum;
 }
 
+
+
 static void help(char ** argv)
 {
     cout << endl
@@ -166,7 +168,7 @@ int main(int argc, char ** argv)
     //normalize
     normalize(invDFTfilter,invDFTfilter,0,1,NORM_MINMAX);
     invDFTfilter.convertTo(invDFTfilter,CV_8U,255);
-    grid.add("Fourier - Gaussian Filter",invDFTfilter);
+    grid.add("DFT - Gaussian Filter ",invDFTfilter);
 
 
     //spatial filter
@@ -185,7 +187,6 @@ int main(int argc, char ** argv)
 
 /****************************************************************************** */
     /************************ GAUSS SPECTRUM ****************************************/
-
 
 
 
@@ -220,11 +221,69 @@ int main(int argc, char ** argv)
 
     normalize(magG, magG, 0, 1, NORM_MINMAX);
     magG.convertTo(magG, CV_8U, 255);
-    grid.add("Gaussian Spectrum", magG);
+    grid.add("DFT - Gaussian Filter Spectrum", magG);
 
 
 
 
+
+
+
+
+
+
+/****************************************************************************** */
+    /************************ GAUSS FILTER IN FREQUENCY ****************************************/
+
+    //generate gaussian in freq
+
+    Mat gaussianFilterinFreq(I.rows,I.cols,CV_32F);
+    float sigma = 40;
+    int cxI = I.cols /2;
+    int cyI = I.rows /2;
+    float D;
+    for(int y=0;y<I.rows;y++)
+    {
+        for(int x=0; x< I.cols; x++)
+        {
+            D = sqrt((x-cx)*(x-cx) + (y-cy)*(y-cy));
+
+            gaussianFilterinFreq.at<float>(y,x) = exp(-(D*D) / (2*sigma * sigma));
+        }
+    }
+
+
+    //convert filter into 2D image
+    Mat planesGaussFreq[] = {gaussianFilterinFreq.clone(),Mat::zeros(gaussianFilterinFreq.size(),CV_32F)};
+    Mat complexGaussinFreq;
+    merge(planesGaussFreq, 2, complexGaussinFreq);         // Add to the expanded another plane with zeros
+
+
+    Mat mulFilterGaussinFreq;
+    mulSpectrums(complexI,complexGaussinFreq,mulFilterGaussinFreq,0);
+
+    Mat invGaussFreq;
+    dft(mulFilterGaussinFreq,invGaussFreq,DFT_INVERSE | DFT_REAL_OUTPUT | DFT_SCALE);
+    
+    normalize(invGaussFreq,invGaussFreq,0,1,NORM_MINMAX);
+    invGaussFreq.convertTo(invGaussFreq,CV_8U,255);
+    grid.add("Gaussian Filter in Freq domain",invGaussFreq);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /****************************************************************************** */
+    /************************ GAUSS FILTER IN FREQUENCY [SPECTRUM]****************************************/
 
     grid.show("Lab9");
     waitKey();
