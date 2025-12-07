@@ -42,13 +42,20 @@ int main(int argc, char ** argv)
 
     //3
     Mat labels;
-    int l = connectedComponents(img,labels,8,CV_32S);
-    cout<<l<<"***********";
+    int nr_labels = connectedComponents(thresholdImg2Mat,labels,8,CV_32S);
+    if(nr_labels > 1)
+    {
+        int max = nr_labels - 1;
+        cv::Mat conn_comp;
+        normalize(labels,conn_comp,0,255,NORM_MINMAX,CV_8U);
+        // labels.convertTo(conn_comp,CV_8U,255.0/max);
+        grid.add("Connected components",conn_comp);
+    }
 
 
-
-    grid.show("Lab9");
+    grid.show("Lab10");
     waitKey();
+    delete [] thresholdImg2;
 
     return EXIT_SUCCESS;
 }
