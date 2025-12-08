@@ -19,11 +19,11 @@ public:
         if (images.empty()) return;
 
         size_t count = images.size();
-        int rows = (int)std::ceil(std::sqrt(count)) + 1;
-        int cols = rows;
+        int rows = (int)std::ceil(std::sqrt(count)) - 1;
+        int cols = rows+1;
 
-        int img_h = 200; // dimensiunea fiecărei imagini în grid
-        int img_w = 200;
+        int img_h = 150; // dimensiunea fiecărei imagini în grid
+        int img_w = 150;
        
 
         cv::Mat grid = cv::Mat::zeros(rows * img_h, cols * img_w, CV_8UC3);

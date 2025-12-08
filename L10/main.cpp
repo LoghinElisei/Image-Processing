@@ -162,7 +162,24 @@ int main(int argc, char ** argv)
 
 
     //6
+    for( int i=1;i<=nrOfObjects;i++)
+    {
+        Mat mask = (labels == i);
+        mask.convertTo(mask,CV_8U,255);
+        
+        Mat objOriginal;
+        imgRD.copyTo(objOriginal,mask);
+        std::vector<Point> pixels;
+        findNonZero(mask,pixels);
+        if(pixels.empty()) continue;
+        Rect box = boundingRect(pixels);
+        Mat croppedSegmented = mask(box);
+        Mat croppedOriginal = objOriginal(box);
 
+        grid.add("ORIGINAL OBJ ["+to_string(i)+"]",croppedOriginal);
+        grid.add("OBJ ["+to_string(i)+"]",croppedSegmented);
+
+    }
 
 
     grid.show("Lab10");

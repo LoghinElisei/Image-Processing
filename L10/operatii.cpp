@@ -118,3 +118,8 @@ unsigned char * threshold2(unsigned char *img,int w, int h)
 }
 
 
+unsigned char * thresholdGlobal(unsigned char *img, int w, int h)
+{
+	
+}
+
