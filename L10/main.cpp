@@ -167,20 +167,29 @@ int main(int argc, char ** argv)
         Mat mask = (labels == i);
         mask.convertTo(mask,CV_8U,255);
         
-        Mat objOriginal;
+        Mat objOriginal ;
         imgRD.copyTo(objOriginal,mask);
         std::vector<Point> pixels;
         findNonZero(mask,pixels);
         if(pixels.empty()) continue;
         Rect box = boundingRect(pixels);
-        Mat croppedSegmented = mask(box);
-        Mat croppedOriginal = objOriginal(box);
+        Mat objMask = mask(box);
+        Mat croppedOriginal = imgRD(box);
+
+        Mat originalObj;
+        croppedOriginal.copyTo(originalObj,objMask);
 
         grid.add("ORIGINAL OBJ ["+to_string(i)+"]",croppedOriginal);
-        grid.add("OBJ ["+to_string(i)+"]",croppedSegmented);
+        grid.add("OBJ ["+to_string(i)+"]",objMask);
+
+        //7 - local threshold
+        Mat croppedGray;
+        cvtColor(croppedOriginal,croppedGray,COLOR_BGR2GRAY);
+        Mat localThreshold;
+        threshold(croppedGray,localThreshold,0,255,THRESH_BINARY | THRESH_OTSU);
+        grid.add("Local THRESHOLD",localThreshold);
 
     }
-
 
     grid.show("Lab10");
     waitKey();
