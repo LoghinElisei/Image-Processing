@@ -85,10 +85,14 @@ int main(int argc, char ** argv)
     grid.add("Colored components", labelsColor);
 
 
+
+
+
     
 
     //4+
-    int nrOfObjects = (nr_labels - 1) >= 3 ? 3 : (nr_labels-1);
+    int nr=3;
+    int nrOfObjects = (nr_labels - 1) >= nr ? nr : (nr_labels-1);
     for( int i=1;i<=nrOfObjects;i++)
     {
         Mat mask = (labels == i);
@@ -99,6 +103,65 @@ int main(int argc, char ** argv)
         imgRD.copyTo(orijinal,mask);
         grid.add("Obj ["+to_string(i)+"] orijinal",orijinal);
     }
+
+
+
+
+
+
+    //5
+    int N = w*h;
+    int i = 0;
+    std::vector<Mat> struct_elements;
+    String str;
+    std::vector<String> nameOfStructure;
+    Mat structured_el = getStructuringElement(MORPH_ELLIPSE,Size(10,10));
+    struct_elements.push_back(structured_el);
+    structured_el = getStructuringElement(MORPH_RECT,Size(5,5));
+    struct_elements.push_back(structured_el);
+    nameOfStructure.push_back("ELLIPSE");
+    nameOfStructure.push_back("RECTANGLE");
+
+    while( ! struct_elements.empty())
+    {
+        structured_el = struct_elements.back();
+        str = nameOfStructure.back();
+        Mat dilated;
+        morphologyEx(thresholdImg2Mat,dilated,MORPH_DILATE,structured_el);
+        grid.add("DILATED ["+str+"]",dilated);
+
+        Mat eroded;
+        morphologyEx(thresholdImg2Mat,eroded,MORPH_ERODE,structured_el);
+        grid.add("ERODED ["+str+"]",eroded);
+
+        Mat closed;
+        morphologyEx(thresholdImg2Mat,closed,MORPH_CLOSE,structured_el);
+        grid.add("CLOSED ["+str+"]",closed);
+
+        Mat open;
+        morphologyEx(thresholdImg2Mat,open,MORPH_OPEN,structured_el);
+        grid.add("OPEN ["+str+"]",open);
+
+        struct_elements.pop_back();
+        nameOfStructure.pop_back();
+    }
+    
+    //error corect image
+    structured_el = getStructuringElement(MORPH_ELLIPSE,Size(5,5));
+    Mat eroded;
+    morphologyEx(thresholdImg2Mat,eroded,MORPH_DILATE,structured_el);
+    Mat closed;
+    morphologyEx(eroded,closed,MORPH_CLOSE,structured_el);
+    grid.add("DILATED + CLOSED",closed);
+
+
+
+
+
+
+
+
+    //6
 
 
 
