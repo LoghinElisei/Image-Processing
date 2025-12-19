@@ -22,8 +22,8 @@ public:
         int rows = (int)std::ceil(std::sqrt(count)) ;
         int cols = rows;
 
-        int img_h = 300; // dimensiunea fiecărei imagini în grid
-        int img_w = 300;
+        int img_h = 250; // dimensiunea fiecărei imagini în grid
+        int img_w = 250;
        
 
         cv::Mat grid = cv::Mat::zeros(rows * img_h, cols * img_w, CV_8UC3);

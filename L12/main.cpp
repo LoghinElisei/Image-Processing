@@ -53,20 +53,67 @@ int main(int argc, char **argv)
     grid.add("DILATE",dilated2);
 
     //4
+    Mat imgNegativeOpened = 255 - opened;
     Mat distanceImg;
     // Mat imgNegativeDilated = 255 - dilated2;
-    distanceTransform(distanceImg,distanceImg,DIST_L2,3);
+    distanceTransform(dilated2,distanceImg,DIST_L2,3);
     grid.add("DISTANCE",distanceImg);
 
     //5
+    Mat threshold2;
     double min=0, max=0;
     int minIdx=0, maxIdx=0;
-    // minMaxLoc(distanceImg,&min,&max);
+    minMaxLoc(distanceImg,&min,&max);
+    threshold(distanceImg,threshold2,0.8*max,255,THRESH_BINARY);
+    threshold2.convertTo(threshold2,CV_8U,255);
+    grid.add("THRESHOLD 2",threshold2);
 
+    //6
+    Mat components;
+    unsigned int nr_components;
+    nr_components = connectedComponents(threshold2,components,8,CV_32S);
+    if(nr_components > 1)
+    {
+        Mat components_normalized;
+        normalize(components,components_normalized,0,255,NORM_MINMAX,CV_8U);
+        components_normalized.convertTo(threshold2,CV_8U,255);
+        grid.add("CONN_COMPONENTS", components_normalized);
+    }
+
+    //7
+    Mat imgEliminatedComponents = dilated2.clone();
+    imgEliminatedComponents.setTo(Scalar(0),threshold2);
+    grid.add("Eliminated Components",imgEliminatedComponents);
+
+
+    //8
+    // Mat markers = components + 1;
+    // markers.setTo(Scalar(0),imgEliminatedComponents);
+    // Mat markersDisplay = Mat::zeros(img.size(),CV_8UC3);
+    // markersDisplay.setTo(Scalar(255,0,0),markers==0);
+    // grid.add("Markers",markersDisplay);
+
+    // Mat markers = components + 1;
+    // markers.setTo(Scalar(255,0,0),imgEliminatedComponents);
+    // Mat markersDisplay = Mat::zeros(img.size(),CV_8UC3);
+    // markersDisplay.setTo(Scalar(0),markers);
+    // grid.add("Markers",markersDisplay);
+   
+    Mat markers = components + 1;
+    markers.setTo(Scalar(0),imgEliminatedComponents);
+    Mat markersVisual,componentVisual;
+    normalize(components,componentVisual,0,255,NORM_MINMAX,CV_8U);
+    cvtColor(componentVisual,markersVisual,COLOR_GRAY2BGR);
+    markersVisual.setTo(Scalar(255,0,0),markers == 0);
+    grid.add("Markers",markersVisual);
+   
+    //9
+    watershed(imgRD,markers);
+    Mat imgWatershedResult = imgRD.clone();
+    imgWatershedResult.setTo(Scalar(0,0,255),markers == -1);
+    grid.add("WATERSHED",imgWatershedResult);
 
     grid.show("Lab12");
     waitKey();
-    
-
     return EXIT_SUCCESS;
 }
